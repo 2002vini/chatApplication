@@ -17,26 +17,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data['message']
-        username = data['username']
+        message_content = data['chat_message_content']
+        self.logged_in_user = self.scope["user"]
 
         await self.channel_layer.group_send(
             self.room_id,
             {
                 'type': 'handleChatEvent',      # name of the function that handles chat event-
-                'chatMessage': message,
-                'username': username,
+                'chatMessage': message_content,
             }
         )
-        await self.save_message(username, self.room_id, message)
+        await self.save_message(self.logged_in_user, self.room_id, message_content)
 
     async def handleChatEvent(self, event):
-        message = event['chatMessage']
-        username = event['username']
+        chatMessage = event['chatMessage']
         await self.send(text_data = json.dumps({
-            'type': 'chat',
-            'message': message,
-            'username': username
+            'message': chatMessage,
         }))
 
     @sync_to_async
@@ -44,3 +40,37 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user = User.objects.get(username=username)
         room = ChatRoom.objects.get(room_id=room_id)
         ChatMessage.objects.create(sender=user, room=room, message_content=message)
+
+
+
+class OnlineConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_group_name = "online_users_pool"
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data=None):
+        data = json.loads(text_data)
+        status = data['status']
+        logged_in_user = self.scope["user"]
+        await self.setUserStatus(logged_in_user, status)
+
+    @sync_to_async
+    def setUserStatus(self, username, status):
+        user = User.objects.get(username=username)
+        profile_user = Profile.objects.get(user=user)
+        if status == 'online':
+            profile_user.online_status = True
+            profile_user.save()
+        else:
+            profile_user.online_status = False
+            profile_user.save()

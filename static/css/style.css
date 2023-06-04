@@ -63,3 +63,18 @@
    .chat_message{
        max-width: 80%;
    }
+
+
+
+
+
+#chat-container{
+    height: 60vh;
+    overflow: scroll;
+}
+
+#group-container{
+    width: 30%;
+    height: 70vh;
+    overflow: scroll;
+}

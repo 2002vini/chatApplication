@@ -5,17 +5,12 @@ import hashlib
 
 def index(request):
     friends = Profile.objects.exclude(user=request.user)
+    curr_profile_user = Profile.objects.get(user=request.user)
     params = {
-        'friends': friends
+        'friends': friends,
+        'curr_profile_user': curr_profile_user,
     }
-    return render(request, "chatApp/index2.html", params)
-
-def home(request):
-    rooms = ChatRoom.objects.all()
-    params = {
-        'chatrooms': rooms,
-    }
-    return render(request, 'chatApp/home.html', params)
+    return render(request, "index.html", params)
 
 
 def chatroom(request, room_name):
@@ -28,7 +23,7 @@ def chatroom(request, room_name):
         "messages": messages,
         'friends': friends
     }
-    return render(request, 'chatApp/room.html', params)
+    return render(request, 'index.html', params)
 
 
 def getRoomId(user_id, dm_user_id):
@@ -48,15 +43,18 @@ def directMessage(request, dm_user_id):
 
     if not ChatRoom.objects.filter(room_id=room_id).exists():
         ChatRoom.objects.create(room_id=room_id)
-
+    receiver=Profile.objects.get(unique_id=dm_user_id)
     chatroom = ChatRoom.objects.get(room_id=room_id)
     messages = ChatMessage.objects.filter(room=chatroom)
     friends = Profile.objects.exclude(user=request.user)
-   
+    curr_profile_user = Profile.objects.get(user=request.user)
+
     params = {
         'room': chatroom,
         'messages': messages,
-        'friends': friends
+        'friends': friends,
+        'receiver':receiver,
+        'curr_profile_user': curr_profile_user,
     }
 
-    return render(request, 'chatApp/room.html', params)
+    return render(request, 'index.html', params)
