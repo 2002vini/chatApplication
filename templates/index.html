@@ -29,10 +29,22 @@
                 <div class="col-sm-4 border-right border-secondary">
                     <img src="{% static 'img/image-1.png' %}" alt="" class="profile-image rounded-circle">
                     <span class="float-right mt-2">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" /></svg>
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chat-left-fill mx-3" fill="currentColor" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" /></svg>
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-three-dots-vertical mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" /> </svg>
+                        <div class="notification">
+                            <i class="fa fa-bell" aria-hidden="true"></i>
+                            <span class="badge" id="count_badge"></span>
+                        </div>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chat-left-fill mx-3"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                        </svg>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-three-dots-vertical mr-2"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                 d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                        </svg>
                     </span>
+    
                 </div>
                 <div class="col-sm-8" id="receiver-name">
                     <div class="d-flex justify-content-between">
@@ -83,7 +95,7 @@
                 <div class="col-sm-8 message-area">
                     <div class="d-flex flex-column h-100">
                         <div class="message-table-scroll">
-                            <table class="table">
+                            <table class="table" id="messagetable">
                                 <tbody id="displayed_messages" style="overflow: scroll;">
                                    {% for message in messages %}
                                    {% if message.sender.username == request.user.username %}
@@ -150,6 +162,8 @@
 
     <script src="{% static 'js/group-message.js' %}"></script>
     <script src="{% static 'js/isOnline.js' %}"></script>
+    <script src="{% static 'js/notify.js' %}"></script>
+
 
     <!-- Option 1: Bootstrap Bundle with Popper.js -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous"></script>

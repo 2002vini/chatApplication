@@ -25,3 +25,8 @@ class ChatMessage(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     class Meta:
         ordering = ['created_at',]
+
+class ChatNotification(models.Model):
+    chat=models.ForeignKey(ChatMessage,on_delete=models.CASCADE)
+    chat_sent_to=models.ForeignKey(User,on_delete=models.CASCADE)
+    is_seen=models.BooleanField(default=False)

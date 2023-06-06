@@ -20,6 +20,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_content = data['chat_message_content']
         receiver=data['receiver_username']
         self.logged_in_user = self.scope["user"]
+       
+       
         await self.channel_layer.group_send(
             self.room_id,
             {
@@ -29,11 +31,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
            
             }
         )
-        await self.save_message(self.logged_in_user, self.room_id, message_content)
+        await self.save_message(self.logged_in_user, self.room_id, message_content,receiver)
 
     async def handleChatEvent(self, event):
         chatMessage = event['chatMessage']
         receiver=event['receiver']
+       
         await self.send(text_data = json.dumps({
             'message': chatMessage,   
             'receiver':receiver
@@ -41,13 +44,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     @sync_to_async
-    def save_message(self, username, room_id, message):
+    def save_message(self, username, room_id, message,receiver):
         user = User.objects.get(username=username)
+        print(self.logged_in_user)
         room = ChatRoom.objects.get(room_id=room_id)
-        ChatMessage.objects.create(sender=user, room=room, message_content=message)
-
-
-
+        chat_obj=ChatMessage.objects.create(sender=user, room=room, message_content=message)
+        #if receiver==user.username:
+            #print("receiving")
+        ChatNotification.objects.create(chat=chat_obj,chat_sent_to=user)
+        print("chat notification has been created")
+        
+ 
 class OnlineConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_group_name = "online_users_pool"
@@ -79,3 +86,31 @@ class OnlineConsumer(AsyncWebsocketConsumer):
         else:
             profile_user.online_status = False
             profile_user.save()
+
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        my_id=self.scope['user'].id
+        self.room_group_name=f'{my_id}'
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+        print("accepted")
+
+    async def send_notification(self, event):
+        print("send notification")
+        data = json.loads(event.get('value'))
+        count = data['count']
+        print(event)
+        await self.send(text_data=json.dumps({
+            'count':count
+        }))
+
+    async def disconnect(self, code):
+        print("disconnected")
+        self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )

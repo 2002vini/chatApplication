@@ -35,7 +35,7 @@ chatSocket.onmessage = function(e){
     else
     document.getElementById('displayed_messages').insertAdjacentHTML('beforeend', html)
     
-    scroll();       // whenever we get a new message we will scroll to top
+    //scroll();       // whenever we get a new message we will scroll to top
 }
 
 document.getElementById('send-button').onclick = function(e){
@@ -50,15 +50,16 @@ document.getElementById('send-button').onclick = function(e){
         
         
     }))
+    
 }
 
 
-function scroll(){
+/*function scroll(){
     const mcontainer = document.getElementById('chat-container');
     mcontainer.scrollTop = mcontainer.scrollHeight;
 }
 
-scroll()
+scroll()*/
 
 
 
