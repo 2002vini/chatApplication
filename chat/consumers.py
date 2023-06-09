@@ -8,9 +8,18 @@ from .models import *
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
+        hash_value = self.room_id.split('$')[-1]
+        print("hash value is:")
+        print(hash_value)
+        hash_value=hash_value.replace("+",'')
+        hash_value=hash_value.replace("=",'')
+        hash_value=hash_value.replace("/",'')
+        print("modified hash value")
+        print(hash_value)
 
+        print(self.room_id)
         await self.channel_layer.group_add(
-            self.room_id,
+            hash_value,
             self.channel_name       # channel_name will be automatically be created for each user
         )
         await self.accept()
@@ -20,10 +29,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_content = data['chat_message_content']
         receiver=data['receiver_username']
         self.logged_in_user = self.scope["user"]
-       
-       
+        hash_value = self.room_id.split('$')[-1]
+        hash_value=hash_value.replace("+",'')
+        hash_value=hash_value.replace("=",'')
+        hash_value=hash_value.replace("/",'')
+        print("we are in receiving function")
+        
         await self.channel_layer.group_send(
-            self.room_id,
+            hash_value,
             {
                 'type': 'handleChatEvent',      # name of the function that handles chat event-
                 'chatMessage': message_content,
@@ -49,8 +62,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(self.logged_in_user)
         room = ChatRoom.objects.get(room_id=room_id)
         chat_obj=ChatMessage.objects.create(sender=user, room=room, message_content=message)
-        #if receiver==user.username:
-            #print("receiving")
         ChatNotification.objects.create(chat=chat_obj,chat_sent_to=user)
         print("chat notification has been created")
         

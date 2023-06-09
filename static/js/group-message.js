@@ -2,6 +2,10 @@
 const chatroom_id = JSON.parse(document.getElementById('json-chatroom').textContent)
 const logged_in_user = JSON.parse(document.getElementById('json-username').textContent)
 const receiver=JSON.parse(document.getElementById('json-receiver_username').textContent)
+const room_name=JSON.parse(document.getElementById('json-roomname').textContent)
+
+
+
 
 // Create a new WebSocket
 const chatSocket = new WebSocket('ws://'+ window.location.host +'/ws/direct/' + chatroom_id+"/");     // NOTE: window.location.host returns the host address dynamically "127.0.0.1:8080"
@@ -38,15 +42,22 @@ chatSocket.onmessage = function(e){
     //scroll();       // whenever we get a new message we will scroll to top
 }
 
+
 document.getElementById('send-button').onclick = function(e){
-    e.preventDefault();     // prevent form submission cause we want to send this message via our web socket
+    e.preventDefault();   
+    console.log("we are in messaging")  // prevent form submission cause we want to send this message via our web socket
     const messageInput = document.getElementById('message-input');
     const chat_message = messageInput.value;
+    console.log("room id is:")
+    console.log(chatroom_id)
     messageInput.value = ""
     chatSocket.send(JSON.stringify({
         'chat_message_content': chat_message,   
         'logged_in_username':logged_in_user,
-        'receiver_username':receiver
+        'receiver_username':receiver,
+        'room_id':chatroom_id,
+        'room_name':room_name,
+        
         
         
     }))

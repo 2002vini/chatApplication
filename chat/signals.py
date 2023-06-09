@@ -6,6 +6,19 @@ import json
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+
+
+def send_web_push_notification(token):
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title='Notification Title',
+            body='Notification Body'
+        ),
+        token=token,
+    )
+    response = messaging.send(message)
+    print('Web push notification sent:', response)
+
 @receiver(post_save, sender=ChatNotification)
 def send_notification(sender, instance, created, **kwargs):
     print("in signal")
